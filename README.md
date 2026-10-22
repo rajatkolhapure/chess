@@ -47,25 +47,31 @@ Level 1 examines all legal moves on the current ply and picks the one yielding t
 
 ---
 
-## 🚀 Quickstart & Testing
+## 🚀 Quickstart & How to Play
 
 ### 1. Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run the Diagnostic Benchmarks
-Run the built-in diagnostic suite to test the bot against tactical benchmark positions:
+### 2. Launch the Interactive Web GUI (Recommended)
+Enjoy drag-and-drop gameplay, real-time evaluation bars, and engine analytics right in your browser:
+```bash
+python server.py
+```
+This automatically launches your browser at `http://127.0.0.1:8080`.
+
+### 3. Run the Diagnostic Benchmarks
+Run the built-in tactical test suite across all engines:
 ```bash
 python benchmark.py
 ```
 
-### 3. Play a Sparring Match
-Launch the interactive arena to test your skills against any unlocked level:
+### 4. Terminal Arena (Optional)
+If you prefer terminal play:
 ```bash
 python arena.py
 ```
-Type your moves in standard coordinate notation (e.g. `e2e4`, `g1f3`, `e7e5`).
 
 ---
 
