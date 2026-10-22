@@ -1,6 +1,6 @@
 """Diagnostic and Benchmark Test Suite for Evolutionary Chess Bots."""
 import chess
-from engines import GreedyBot, MinimaxBot, TacticianBot
+from engines import GreedyBot, MinimaxBot, TacticianBot, DeepSearcherBot
 
 
 def run_benchmarks(bot):
@@ -68,3 +68,6 @@ if __name__ == "__main__":
 
     bot3 = TacticianBot(depth=4)
     run_benchmarks(bot3)
+
+    bot4 = DeepSearcherBot(max_depth=6, time_limit=2.0)
+    run_benchmarks(bot4)

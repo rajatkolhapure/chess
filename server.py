@@ -5,7 +5,7 @@ import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 import chess
-from engines import GreedyBot, MinimaxBot, TacticianBot
+from engines import GreedyBot, MinimaxBot, TacticianBot, DeepSearcherBot
 from elo import load_profile, update_player_rating, BOT_RATINGS
 from evaluator import StockfishEvaluator
 
@@ -13,6 +13,7 @@ ENGINES = {
     "1": GreedyBot(),
     "2": MinimaxBot(depth=3),
     "3": TacticianBot(depth=4),
+    "4": DeepSearcherBot(max_depth=6, time_limit=2.5),
 }
 
 CURRENT_BOARD = chess.Board()
@@ -52,6 +53,11 @@ class ChessRequestHandler(SimpleHTTPRequestHandler):
             bot_level = str(data.get("bot_level", "1"))
             result = float(data.get("result", 0.5))  # 1.0 Win, 0.5 Draw, 0.0 Loss
             profile = update_player_rating(bot_level, result)
+            self._send_json(profile)
+
+        elif parsed.path == "/api/resign":
+            bot_level = str(data.get("bot_level", "1"))
+            profile = update_player_rating(bot_level, 0.0)  # Loss
             self._send_json(profile)
 
         elif parsed.path == "/api/move":

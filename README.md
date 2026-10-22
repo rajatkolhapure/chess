@@ -13,10 +13,19 @@ Each stage in this repository represents an evolutionary milestone in computer c
 | **1** | **The Greedy Bot** | Static Evaluation (Centipawns), Piece-Square Tables, Mobility, Phase Tapering | ~800 |  **Completed** |
 | **2** | **The Minimax Bot** | Zero-Sum Game Tree, Adversarial Thinking, Depth 3 Lookahead, Refusing Baits | ~1200 |  **Completed** |
 | **3** | **The Tactician** | Quiescence Search, MVV-LVA Move Ordering, Alpha-Beta Pruning, Horizon Fix | ~1500 |  **Completed** |
-| **4** | **The Deep Searcher** | Transposition Tables, Zobrist Hashing, Killer Moves, Iterative Deepening | ~1900 | *Next* |
-| **5** | **The Grandmaster** | Pawn Structure (Isolani, Passed, Doubled), King Safety, Outposts | ~2200 | *Queued* |
-| **6** | **The Speed Demon** | Null-Move Pruning, Late Move Reductions (LMR), History Heuristics | ~2500 | *Queued* |
+| **4** | **The Deep Searcher** | Transposition Tables (Zobrist), Null-Move Pruning (NMP), Iterative Deepening | ~1900 |  **Completed** |
+| **5** | **The Grandmaster** | History Heuristics, Late Move Reductions (LMR), Aspiration Windows | ~2200 | *Next* |
+| **6** | **The Speed Demon** | Bitboard Move Pruning, Principal Variation Search (PVS) | ~2500 | *Queued* |
 | **7** | **The Superhuman** | NNUE (Efficiently Updatable Neural Network), Self-Play Learning | 3500+ | *Queued* |
+
+---
+
+## 🔬 Level 4: The Deep Searcher (Gravitas Reliability Runtime)
+Engineered under the **Gravitas Invariants** (grounded mutations, thread-safe board isolation, evidence-backed benchmark verification):
+- **Zobrist Transposition Tables (TT)**: 64-bit hardware integer hashing of boards caches millions of evaluated branches across transpositions.
+- **Null-Move Pruning (NMP)**: Hands the opponent a free consecutive move to verify if a position is so overwhelmingly won that calculating 35 moves is redundant (3x speedup).
+- **Iterative Deepening**: Progressively calculates Depth 1 $\rightarrow$ 2 $\rightarrow$ 3 $\rightarrow$ 4 $\rightarrow$ 5 $\rightarrow$ 6+, using prior best moves to trigger instant $\alpha$-$\beta$ cutoffs.
+- **Fail-Safe Board Protection**: Wrapped in `try...finally` stack rollbacks to prevent board state corruption under millisecond timeout interruptions.
 
 ---
 

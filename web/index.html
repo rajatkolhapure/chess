@@ -288,7 +288,8 @@
           <select id="bot-select">
             <option value="1">Level 1: Greedy Bot (Depth 1, ~800 Elo)</option>
             <option value="2">Level 2: Minimax Bot (Depth 3, ~1200 Elo)</option>
-            <option value="3" selected>Level 3: The Tactician (Quiescence + Alpha-Beta, ~1500 Elo)</option>
+            <option value="3">Level 3: The Tactician (Quiescence + Alpha-Beta, ~1500 Elo)</option>
+            <option value="4" selected>Level 4: The Deep Searcher (Zobrist TT + NMP, ~1900 Elo)</option>
           </select>
         </div>
 
@@ -302,7 +303,8 @@
 
         <div class="btn-row">
           <button id="reset-btn" class="primary-btn">New Game</button>
-          <button id="flip-btn" class="secondary-btn" style="margin-top: 4px;">Flip Board</button>
+          <button id="resign-btn" class="secondary-btn" style="border-color: #ef4444; color: #ef4444;">Resign</button>
+          <button id="flip-btn" class="secondary-btn">Flip</button>
         </div>
         <div id="game-status" class="status-badge">White to move</div>
       </div>
@@ -586,6 +588,21 @@
       board = Chessboard('board', config);
 
       $('#reset-btn').click(resetGame);
+
+      $('#resign-btn').click(function() {
+        if (game.game_over()) return;
+        const botLevel = $('#bot-select').val();
+        $.ajax({
+          url: '/api/resign',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ bot_level: botLevel }),
+          success: function(profile) {
+            renderProfile(profile);
+            $('#game-status').attr('class', 'status-badge gameover').text('You resigned. Game over.');
+          }
+        });
+      });
 
       $('#flip-btn').click(function() {
         board.flip();
