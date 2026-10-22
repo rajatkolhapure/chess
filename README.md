@@ -11,12 +11,31 @@ Each stage in this repository represents an evolutionary milestone in computer c
 | Level | Engine Name | Key Concepts Introduced | Elo Target | Status |
 | :---: | :--- | :--- | :---: | :---: |
 | **1** | **The Greedy Bot** | Static Evaluation (Centipawns), Piece-Square Tables, Mobility, Phase Tapering | ~800 |  **Completed** |
-| **2** | **The Minimax Bot** | Zero-Sum Game Tree, Adversarial Thinking, Depth 2-4 Lookahead | ~1200 | *Next* |
-| **3** | **The Tactician** | Quiescence Search, Forcing-Move Extension, Eliminating the Horizon Effect | ~1500 | *Queued* |
+| **2** | **The Minimax Bot** | Zero-Sum Game Tree, Adversarial Thinking, Depth 3 Lookahead, Refusing Baits | ~1200 |  **Completed** |
+| **3** | **The Tactician** | Quiescence Search, Forcing-Move Extension, Eliminating the Horizon Effect | ~1500 | *Next* |
 | **4** | **The Deep Searcher** | Alpha-Beta ($\alpha$-$\beta$) Pruning, MVV-LVA Move Ordering, Killer Moves | ~1900 | *Queued* |
 | **5** | **The Grandmaster** | Pawn Structure (Isolani, Passed, Doubled), King Safety, Outposts | ~2200 | *Queued* |
 | **6** | **The Speed Demon** | Transposition Tables, Zobrist Hashing, Null-Move Pruning, LMR | ~2500 | *Queued* |
 | **7** | **The Superhuman** | NNUE (Efficiently Updatable Neural Network), Self-Play Learning | 3500+ | *Queued* |
+
+---
+
+## 👤 Real-Time Elo Rating Tracker
+The engine now includes a live FIDE Elo calculation engine ([elo.py](file:///c:/Users/rmk19/OneDrive/Documents/chess/elo.py)) that tracks your performance across games.
+- Starts at provisional **1000 Elo**.
+- Dynamically calculates $K$-factor adjustments after every checkmate/draw against each bot level.
+- Displayed directly inside the Web GUI sidebar.
+
+---
+
+## 🧠 Stage 2: Minimax vs. Greedy (What Changed?)
+
+| Test Scenario | Level 1: Greedy Bot (Depth 1) | Level 2: Minimax Bot (Depth 3) |
+| :--- | :--- | :--- |
+| **Checkmate in 1** | Can get distracted by high-value piece capture | **Delivers Mate Instantly (`h5f7#`)** |
+| **Poisoned Bait Trap** | **Fell for Trap (`d1d8`)** (Snaps defended rook, loses Queen) | **Refused Bait (`d1b1`)** (Sees Queen recapture on ply 2) |
+| **Adversarial Logic** | Assumes opponent is passive | Assumes opponent plays the best possible counter-move |
+| **Nodes Explored** | ~35 positions | **~21,000 positions** per move |
 
 ---
 

@@ -263,13 +263,31 @@
     <!-- Sidebar Controls and Diagnostics -->
     <div class="sidebar">
       
+      <!-- Player Profile & Elo Card -->
+      <div class="card" style="border-left: 4px solid var(--accent);">
+        <h2>👤 Your Rating Profile</h2>
+        <div class="stat-row">
+          <span class="stat-label">Current Elo:</span>
+          <span id="player-rating" class="stat-value" style="font-size: 1.25rem; color: #60a5fa;">1000</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Record (W - L - D):</span>
+          <span id="player-record" class="stat-value">0 - 0 - 0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Last Rating Change:</span>
+          <span id="player-delta" class="stat-value" style="color: var(--text-muted);">-</span>
+        </div>
+      </div>
+
       <!-- Match Configuration -->
       <div class="card">
         <h2>⚙️ Match Settings</h2>
         <div class="form-group">
           <label for="bot-select">Select Opponent Level:</label>
           <select id="bot-select">
-            <option value="1" selected>Level 1: Greedy Bot (Static Eval & Depth 1)</option>
+            <option value="1">Level 1: Greedy Bot (Depth 1, ~800 Elo)</option>
+            <option value="2" selected>Level 2: Minimax Bot (Depth 3 Lookahead, ~1200 Elo)</option>
           </select>
         </div>
 
@@ -340,12 +358,58 @@
       $('#stat-eval').text(labelText + ' (' + centipawns + ' cp)');
     }
 
+    let gameEndedHandled = false;
+
+    function fetchProfile() {
+      $.getJSON('/api/profile', function(profile) {
+        renderProfile(profile);
+      });
+    }
+
+    function renderProfile(profile) {
+      if (!profile) return;
+      $('#player-rating').text(profile.rating || 1000);
+      const wins = profile.wins || 0;
+      const losses = profile.losses || 0;
+      const draws = profile.draws || 0;
+      $('#player-record').text(wins + ' - ' + losses + ' - ' + draws);
+      if (profile.last_delta !== undefined) {
+        const sign = profile.last_delta >= 0 ? '+' : '';
+        const color = profile.last_delta >= 0 ? 'var(--accent)' : '#ef4444';
+        $('#player-delta').html('<span style="color:' + color + ';">' + sign + profile.last_delta + ' (' + profile.old_rating + ' → ' + profile.rating + ')</span>');
+      }
+    }
+
+    function handleGameOver(state) {
+      if (gameEndedHandled || !state.is_game_over) return;
+      gameEndedHandled = true;
+
+      let result = 0.5;
+      if (state.is_checkmate) {
+        const playerLost = (state.turn === playerColor);
+        result = playerLost ? 0.0 : 1.0;
+      }
+
+      const botLevel = $('#bot-select').val();
+      $.ajax({
+        url: '/api/finish_game',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ bot_level: botLevel, result: result }),
+        success: function(profile) {
+          renderProfile(profile);
+        }
+      });
+    }
+
     function updateStatus(state) {
       if (state.is_checkmate) {
         const winner = state.turn === 'white' ? 'Black' : 'White';
         $('#game-status').attr('class', 'status-badge gameover').text('Checkmate! Winner: ' + winner);
+        handleGameOver(state);
       } else if (state.is_stalemate) {
         $('#game-status').attr('class', 'status-badge gameover').text('Draw by Stalemate');
+        handleGameOver(state);
       } else if (state.is_check) {
         $('#game-status').attr('class', 'status-badge check').text(capitalize(state.turn) + ' is in CHECK!');
       } else {
@@ -357,6 +421,9 @@
       }
       if (state.bot_move) {
         $('#stat-bot-move').text(state.bot_move);
+      }
+      if (state.profile) {
+        renderProfile(state.profile);
       }
       updateEvalBar(state.eval_score || 0);
     }
@@ -458,6 +525,7 @@
     function resetGame() {
       game.reset();
       moveHistory = [];
+      gameEndedHandled = false;
       $('#move-history').text('1. Game started');
       $('#stat-bot-move').text('-');
       $('#stat-nodes').text('0');
@@ -480,6 +548,7 @@
     }
 
     $(document).ready(function() {
+      fetchProfile();
       const config = {
         draggable: true,
         position: 'start',

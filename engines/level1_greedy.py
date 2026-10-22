@@ -135,24 +135,22 @@ class GreedyBot(BaseEngine):
         """Statically evaluate board position from White's perspective."""
         self.nodes_evaluated += 1
 
-        if board.is_checkmate():
-            # If the side to move is checkmated:
-            return -20000 if board.turn == chess.WHITE else 20000
-        if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_draw():
-            return 0
-
         score = 0
-        is_endgame = self._is_endgame(board)
+        piece_map = board.piece_map()
 
-        # 1. Material & Piece-Square Tables
-        for square in chess.SQUARES:
-            piece = board.piece_at(square)
-            if not piece:
-                continue
+        # Fast endgame detection from piece_map directly
+        has_queens = False
+        major_count = 0
+        for p in piece_map.values():
+            if p.piece_type == chess.QUEEN:
+                has_queens = True
+            elif p.piece_type in (chess.ROOK, chess.BISHOP, chess.KNIGHT):
+                major_count += 1
+        is_endgame = (not has_queens) or (major_count <= 4)
 
+        for square, piece in piece_map.items():
             piece_val = PIECE_VALUES[piece.piece_type]
 
-            # PST index calculation (mirror square for black)
             if piece.piece_type == chess.KING:
                 table = KING_ENDGAME_TABLE if is_endgame else KING_MIDDLEGAME_TABLE
             else:
@@ -166,20 +164,6 @@ class GreedyBot(BaseEngine):
                 score += total_piece_score
             else:
                 score -= total_piece_score
-
-        # 2. Mobility Bonus (1 centipawn per legal move)
-        # Note: In pure static evaluation, mobility adds subtle activity incentives
-        white_mobility = 0
-        black_mobility = 0
-        current_turn = board.turn
-
-        board.turn = chess.WHITE
-        white_mobility = board.legal_moves.count()
-        board.turn = chess.BLACK
-        black_mobility = board.legal_moves.count()
-        board.turn = current_turn
-
-        score += (white_mobility - black_mobility) * 2
 
         return score
 

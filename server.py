@@ -5,10 +5,12 @@ import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 import chess
-from engines import GreedyBot
+from engines import GreedyBot, MinimaxBot
+from elo import load_profile, update_player_rating, BOT_RATINGS
 
 ENGINES = {
     "1": GreedyBot(),
+    "2": MinimaxBot(depth=3),
 }
 
 CURRENT_BOARD = chess.Board()
@@ -20,6 +22,13 @@ class ChessRequestHandler(SimpleHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=os.path.join(os.path.dirname(__file__), "web"), **kwargs)
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/profile":
+            self._send_json(load_profile())
+        else:
+            super().do_GET()
 
     def do_POST(self):
         parsed = urlparse(self.path)
@@ -33,7 +42,15 @@ class ChessRequestHandler(SimpleHTTPRequestHandler):
             bot_level = str(data.get("bot_level", "1"))
             CURRENT_BOT = ENGINES.get(bot_level, ENGINES["1"])
             CURRENT_BOARD = chess.Board()
-            self._send_json(self._get_game_state())
+            state = self._get_game_state()
+            state["profile"] = load_profile()
+            self._send_json(state)
+
+        elif parsed.path == "/api/finish_game":
+            bot_level = str(data.get("bot_level", "1"))
+            result = float(data.get("result", 0.5))  # 1.0 Win, 0.5 Draw, 0.0 Loss
+            profile = update_player_rating(bot_level, result)
+            self._send_json(profile)
 
         elif parsed.path == "/api/move":
             move_uci = data.get("move")
