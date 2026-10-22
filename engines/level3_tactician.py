@@ -13,7 +13,8 @@ Target Elo: ~1500
 
 import chess
 from .base import BaseEngine
-from .level1_greedy import GreedyBot, PIECE_VALUES
+from .level1_greedy import PIECE_VALUES
+from evaluator import StockfishEvaluator
 
 
 class TacticianBot(BaseEngine):
@@ -25,10 +26,9 @@ class TacticianBot(BaseEngine):
             description=f"Searches Depth {depth} + Quiescence. Uses Alpha-Beta pruning & MVV-LVA to eliminate the Horizon Effect."
         )
         self.search_depth = depth
-        self.evaluator = GreedyBot()
 
     def evaluate(self, board: chess.Board) -> int:
-        return self.evaluator.evaluate(board)
+        return StockfishEvaluator.evaluate(board)
 
     def _mvv_lva_score(self, board: chess.Board, move: chess.Move) -> int:
         """Score moves to order forcing captures first (Most Valuable Victim - Least Valuable Attacker)."""

@@ -20,7 +20,18 @@ Each stage in this repository represents an evolutionary milestone in computer c
 
 ---
 
-## 👤 Real-Time Elo Rating Tracker
+## 🔬 Stockfish Positional Evaluator Pipeline
+The engine now features a maxed-out classical evaluation pipeline ([evaluator.py](file:///c:/Users/rmk19/OneDrive/Documents/chess/evaluator.py)) mirroring Stockfish's architecture:
+- **Tapered PeSTO Piece-Square Scoring**: Continuous interpolation between Opening, Middlegame, and Endgame tables.
+- **Bishop Pair Dynamic (+50 cp)**: Rewards the synergistic dominance of dual bishop diagonals.
+- **Rook Dominance (+35 to +75 cp)**: Scores fully open files, semi-open files, and infiltration to the 7th rank.
+- **Pawn Structure Engine**:
+  - *Passed Pawns*: Exponential bonus as pawns march towards promotion on ranks 5, 6, and 7.
+  - *Isolated Pawns*: Structural weakness penalties (Isolani).
+  - *Doubled Pawns*: Penalizes stacked pawns hindering mobility.
+- **King Shield Safety**: Analyzes castled pawn shields (`f2/g2/h2`) and applies severe danger penalties if shields are cracked or stripped.
+
+All evaluation metrics are computed live and displayed in the Web GUI's **Stockfish Positional Breakdown** panel.
 The engine includes a live FIDE Elo calculation engine ([elo.py](file:///c:/Users/rmk19/OneDrive/Documents/chess/elo.py)) that tracks your performance across games.
 - Starts at provisional **1000 Elo**.
 - Dynamically calculates $K$-factor adjustments after every checkmate/draw against each bot level.

@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import chess
 from engines import GreedyBot, MinimaxBot, TacticianBot
 from elo import load_profile, update_player_rating, BOT_RATINGS
+from evaluator import StockfishEvaluator
 
 ENGINES = {
     "1": GreedyBot(),
@@ -86,7 +87,7 @@ class ChessRequestHandler(SimpleHTTPRequestHandler):
             self._send_json({"error": "Not found"}, status=404)
 
     def _get_game_state(self):
-        eval_score = CURRENT_BOT.evaluate(CURRENT_BOARD)
+        breakdown = StockfishEvaluator.evaluate_breakdown(CURRENT_BOARD)
         return {
             "fen": CURRENT_BOARD.fen(),
             "turn": "white" if CURRENT_BOARD.turn == chess.WHITE else "black",
@@ -94,7 +95,8 @@ class ChessRequestHandler(SimpleHTTPRequestHandler):
             "is_check": CURRENT_BOARD.is_check(),
             "is_checkmate": CURRENT_BOARD.is_checkmate(),
             "is_stalemate": CURRENT_BOARD.is_stalemate(),
-            "eval_score": eval_score,
+            "eval_score": breakdown["total"],
+            "eval_breakdown": breakdown,
             "legal_moves": [m.uci() for m in CURRENT_BOARD.legal_moves],
         }
 

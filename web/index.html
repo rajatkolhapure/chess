@@ -307,24 +307,40 @@
         <div id="game-status" class="status-badge">White to move</div>
       </div>
 
-      <!-- Engine Analytics Panel -->
-      <div class="card">
-        <h2>🧠 Engine Thoughts</h2>
+      <!-- Stockfish Positional Evaluation Breakdown -->
+      <div class="card" style="border-top: 3px solid #60a5fa;">
+        <h2>📊 Stockfish Positional Breakdown</h2>
         <div class="stat-row">
-          <span class="stat-label">Static Evaluation:</span>
-          <span id="stat-eval" class="stat-value">0.00</span>
+          <span class="stat-label">Overall Evaluation:</span>
+          <span id="stat-eval" class="stat-value" style="font-size: 1.15rem; color: #60a5fa;">0.00</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Material & Squares:</span>
+          <span id="stat-material" class="stat-value">0 cp</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Piece Coordination (Bishops/Rooks):</span>
+          <span id="stat-activity" class="stat-value">0 cp</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Pawn Structure (Passed/Isolani):</span>
+          <span id="stat-pawns" class="stat-value">0 cp</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">King Safety / Shield:</span>
+          <span id="stat-king" class="stat-value">0 cp</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Game Phase:</span>
+          <span id="stat-phase" class="stat-value">Opening (24/24)</span>
         </div>
         <div class="stat-row">
           <span class="stat-label">Bot Last Move:</span>
           <span id="stat-bot-move" class="stat-value">-</span>
         </div>
         <div class="stat-row">
-          <span class="stat-label">Positions Evaluated:</span>
+          <span class="stat-label">Positions Explored:</span>
           <span id="stat-nodes" class="stat-value">0</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Game Phase:</span>
-          <span id="stat-phase" class="stat-value">Opening</span>
         </div>
       </div>
 
@@ -425,6 +441,15 @@
       }
       if (state.profile) {
         renderProfile(state.profile);
+      }
+      if (state.eval_breakdown) {
+        const b = state.eval_breakdown;
+        const fmt = val => (val >= 0 ? '+' : '') + val + ' cp';
+        $('#stat-material').text(fmt(b.material));
+        $('#stat-activity').text(fmt(b.positional));
+        $('#stat-pawns').text(fmt(b.pawn_structure));
+        $('#stat-king').text(fmt(b.king_safety));
+        $('#stat-phase').text(b.phase_name + ' (' + b.phase + '/24)');
       }
       updateEvalBar(state.eval_score || 0);
     }
