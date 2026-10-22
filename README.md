@@ -12,19 +12,32 @@ Each stage in this repository represents an evolutionary milestone in computer c
 | :---: | :--- | :--- | :---: | :---: |
 | **1** | **The Greedy Bot** | Static Evaluation (Centipawns), Piece-Square Tables, Mobility, Phase Tapering | ~800 |  **Completed** |
 | **2** | **The Minimax Bot** | Zero-Sum Game Tree, Adversarial Thinking, Depth 3 Lookahead, Refusing Baits | ~1200 |  **Completed** |
-| **3** | **The Tactician** | Quiescence Search, Forcing-Move Extension, Eliminating the Horizon Effect | ~1500 | *Next* |
-| **4** | **The Deep Searcher** | Alpha-Beta ($\alpha$-$\beta$) Pruning, MVV-LVA Move Ordering, Killer Moves | ~1900 | *Queued* |
+| **3** | **The Tactician** | Quiescence Search, MVV-LVA Move Ordering, Alpha-Beta Pruning, Horizon Fix | ~1500 |  **Completed** |
+| **4** | **The Deep Searcher** | Transposition Tables, Zobrist Hashing, Killer Moves, Iterative Deepening | ~1900 | *Next* |
 | **5** | **The Grandmaster** | Pawn Structure (Isolani, Passed, Doubled), King Safety, Outposts | ~2200 | *Queued* |
-| **6** | **The Speed Demon** | Transposition Tables, Zobrist Hashing, Null-Move Pruning, LMR | ~2500 | *Queued* |
+| **6** | **The Speed Demon** | Null-Move Pruning, Late Move Reductions (LMR), History Heuristics | ~2500 | *Queued* |
 | **7** | **The Superhuman** | NNUE (Efficiently Updatable Neural Network), Self-Play Learning | 3500+ | *Queued* |
 
 ---
 
 ## 👤 Real-Time Elo Rating Tracker
-The engine now includes a live FIDE Elo calculation engine ([elo.py](file:///c:/Users/rmk19/OneDrive/Documents/chess/elo.py)) that tracks your performance across games.
+The engine includes a live FIDE Elo calculation engine ([elo.py](file:///c:/Users/rmk19/OneDrive/Documents/chess/elo.py)) that tracks your performance across games.
 - Starts at provisional **1000 Elo**.
 - Dynamically calculates $K$-factor adjustments after every checkmate/draw against each bot level.
 - Displayed directly inside the Web GUI sidebar.
+
+---
+
+## 🧠 Stage 3: The Tactician (Quiescence & Alpha-Beta)
+
+Why Level 2 fell off in the middlegame:
+1. **The Horizon Effect**: An abrupt search depth cut off calculation mid-trade. Level 2 evaluated positions with blood still on the board.
+2. **Combinatorial Explosion**: Without pruning, looking 5 moves deep meant exploring over 100,000,000 moves.
+
+How Level 3 solves this:
+- **Quiescence Search**: At the leaf nodes, the engine refuses to freeze if there are active captures. It continues calculating all capture sequences until the position is completely calm ("quiescent").
+- **Alpha-Beta Pruning**: If a move branch is mathematically proven to be worse than an existing option, the rest of the branch is pruned immediately.
+- **MVV-LVA Ordering**: Moves are sorted by **Most Valuable Victim - Least Valuable Attacker** (e.g. Pawn captures Queen tested before Queen captures Pawn) to trigger immediate beta cutoffs.
 
 ---
 

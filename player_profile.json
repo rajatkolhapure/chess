@@ -1,9 +1,18 @@
 {
   "username": "Player",
-  "rating": 1000,
-  "games_played": 0,
-  "wins": 0,
+  "rating": 1024,
+  "games_played": 1,
+  "wins": 1,
   "losses": 0,
   "draws": 0,
-  "history": []
+  "history": [
+    {
+      "bot_level": "2",
+      "bot_rating": 1200,
+      "old_rating": 1000,
+      "new_rating": 1024,
+      "delta": 24,
+      "outcome": "WIN"
+    }
+  ]
 }

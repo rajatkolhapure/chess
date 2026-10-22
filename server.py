@@ -5,12 +5,13 @@ import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 import chess
-from engines import GreedyBot, MinimaxBot
+from engines import GreedyBot, MinimaxBot, TacticianBot
 from elo import load_profile, update_player_rating, BOT_RATINGS
 
 ENGINES = {
     "1": GreedyBot(),
     "2": MinimaxBot(depth=3),
+    "3": TacticianBot(depth=4),
 }
 
 CURRENT_BOARD = chess.Board()
